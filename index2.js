@@ -16,7 +16,7 @@ let scene,
 
 const GLTF_Loader = new GLTFLoader();
 
-const defaultCamera = { x: 0, y: 1, z: 22 };
+const defaultCamera = { x: 0, y: 7, z: 22 };
 const objDefaultPosition = { x: 0, y: -2, z: 0 };
 const objectDefaultScale = { x: 1, y: 1.2, z: 1 };
 const animationTime = 1000;
@@ -39,7 +39,7 @@ const setupControls = () => {
     controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
     controls.dampingFactor = 0.05;
     controls.screenSpacePanning = false;
-    controls.maxDistance = 20;
+    controls.maxDistance = defaultCamera.z;
     controls.maxPolarAngle = Math.PI / 2;
 
 }
