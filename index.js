@@ -12,7 +12,8 @@ let scene,
     floor,
     texture,
     loader,
-    mesh;
+    mesh,
+    circle;
 
 const defaultCamera = { x: 0, y: 10, z: -20 };
 const amimationTime = 1000;
@@ -47,10 +48,13 @@ const init = () => {
 
     controls.screenSpacePanning = false;
 
-    // controls.maxDistance = 20;
+    controls.maxDistance = 20;
 
-    // controls.maxPolarAngle = Math.PI / 2;
-    // controls.maxAzimuthAngle = 100;
+    controls.maxPolarAngle = Math.PI / 2;
+
+
+
+
 
 
     texture = new THREE.TextureLoader().load('./BANNER/texture/BANNER.png');
@@ -61,6 +65,12 @@ const init = () => {
     mesh.position.set(0, -3, 6);
     mesh.name = "box";
     scene.add(mesh);
+
+
+
+
+
+
 
 
     texture = new THREE.TextureLoader().load('./images/flower.jpg');
@@ -173,12 +183,11 @@ function onClick() {
             var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
                 keyboard: false
             })
-            console.log(myModal)
 
             new TWEEN.Tween(camera.position)
                 .to({
                     x: 0,
-                    y: 0,
+                    y: 0.05,
                     z: -2
                 }, amimationTime)
                 .start()
