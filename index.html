@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>My first three.js app</title>
+    <style>
+        body {
+            margin: 0;
+        }
+    </style>
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous">
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-U1DAWAznBHeqEIlVSCgzq+c9gqGAJn5c/t99JyeKa9xxaYpSvHU5awsuZVVFIhvj" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.0.943/pdf.min.js">
+    </script>
+
+    <style>
+        #canvas_container {
+            width: 100%;
+            height: 90%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="modal fade  " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="overflow: scroll;">
+                    <div id="my_pdf_viewer">
+                        <div id="canvas_container">
+                            <canvas id="pdf_renderer"></canvas>
+                        </div>
+
+                        <div id="navigation_controls">
+                            <div class="row text-center">
+                                <div class="col-2">
+                                    <button id="go_previous" class="btn btn-sm btn-info">Previous</button>
+
+                                </div>
+                                <div class="col-4">
+                                    <input id="current_page" class="form-control" value="1" type="number" />
+
+                                </div>
+                                <div class="col-2">
+                                    <button id="go_next" class="btn btn-sm btn-info">Next</button>
+
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="zoom_controls" class="d-none">
+                            <button id="zoom_in">+</button>
+                            <button id="zoom_out">-</button>
+                        </div>
+                    </div>
+
+                    <script>
+                        var myState = {
+                            pdf: null,
+                            currentPage: 1,
+                            zoom: 1
+                        }
+
+                        pdfjsLib.getDocument('./test.pdf').then((pdf) => {
+
+                            myState.pdf = pdf;
+                            render();
+
+                        });
+
+                        document.getElementById('go_next')
+                            .addEventListener('click', (e) => {
+                                if (myState.pdf == null || myState.currentPage > myState.pdf._pdfInfo.numPages)
+                                    return;
+
+                                myState.currentPage += 1;
+                                document.getElementById("current_page").value = myState.currentPage;
+                                render();
+                            });
+                        document.getElementById('current_page')
+                            .addEventListener('keypress', (e) => {
+                                if (myState.pdf == null) return;
+
+                                // Get key code
+                                var code = (e.keyCode ? e.keyCode : e.which);
+
+                                // If key code matches that of the Enter key
+                                if (code == 13) {
+                                    var desiredPage = document.getElementById('current_page').valueAsNumber;
+
+                                    if (desiredPage >= 1 && desiredPage <= myState.pdf._pdfInfo.numPages) {
+                                        myState.currentPage = desiredPage;
+                                        document.getElementById("current_page").value = desiredPage;
+                                        render();
+                                    }
+                                }
+                            });
+                        document.getElementById('zoom_in')
+                            .addEventListener('click', (e) => {
+                                if (myState.pdf == null) return;
+                                myState.zoom += 0.5;
+
+                                render();
+                            });
+                        document.getElementById('zoom_out')
+                            .addEventListener('click', (e) => {
+                                if (myState.pdf == null) return;
+                                myState.zoom -= 0.5;
+
+                                render();
+                            });
+
+                        function render() {
+                            myState.pdf.getPage(myState.currentPage).then((page) => {
+
+                                var canvas = document.getElementById("pdf_renderer");
+                                var ctx = canvas.getContext('2d');
+
+                                var viewport = page.getViewport(myState.zoom);
+
+                                canvas.width = viewport.width;
+                                canvas.height = viewport.height;
+
+                                page.render({
+                                    canvasContext: ctx,
+                                    viewport: viewport
+                                });
+                            });
+                        }
+                    </script>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="./index.js"></script>
+</body>
+
+</html>
