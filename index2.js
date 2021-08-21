@@ -21,6 +21,8 @@ const objDefaultPosition = { x: 0, y: -2, z: 0 };
 const objectDefaultScale = { x: 1, y: 1.2, z: 1 };
 const animationTime = 1000;
 
+let children = {};
+
 
 const myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
     keyboard: false,
@@ -103,6 +105,8 @@ const init = () => {
     window.addEventListener('resize', onWindowResize);
     window.addEventListener("hidden.bs.modal", handleModalClose);
 
+
+
 }
 
 const handleModalClose = () => {
@@ -118,21 +122,48 @@ const handleModalClose = () => {
             y: defaultCamera.y,
             z: defaultCamera.z,
         }, animationTime)
-        .onComplete(() => camera.lookAt(0, 0, 0))
+        .onComplete(() => {
+            camera.lookAt(0, 0, 0);
+            children.circle1.visible = true;
+            children.circle2.visible = false;
+        })
         .start();
+
+
 }
 
 const addCircles = () => {
-    GLTF_Loader.load('./models/gltf/circle_1.gltf', function(gltf) {
-        gltf.scene.position.set(
-            8.6, -2, -10
-        );
-        gltf.scene.scale.set(
-            1.5, 1.3, 1.5
-        );
-        scene.add(gltf.scene);
-        gltf.scene.children[0].name = "circle1";
-    }, undefined, error => console.error(error));
+
+    let circles = [
+        './models/gltf/circle_1.gltf',
+        './models/gltf/circle_2.gltf',
+    ];
+
+    circles.forEach((circle, index) => {
+        GLTF_Loader
+            .load(
+                circle,
+                function(gltf) {
+                    gltf.scene.position.set(
+                        8.6, -2, -10
+                    );
+                    gltf.scene.scale.set(
+                        1.5, 1.3, 1.5
+                    );
+                    scene.add(gltf.scene);
+                    gltf.scene.children[0].name = `circle${index + 1}`;
+
+                    scene.children.forEach((child, index) => {
+                        if (child.children[0] && child.children[0].name == 'circle2') {
+                            child.visible = false;
+                        }
+                    });
+                },
+                undefined,
+                error => console.error(error)
+            );
+    });
+
 }
 
 const makeBanner = () => {
@@ -241,8 +272,16 @@ function onClick() {
     }
 }
 
+
 function onMouseMove() {
     event.preventDefault();
+
+    children = {};
+    scene.children.forEach((child, index) => {
+        if (child.children[0]) {
+            children[child.children[0].name] = child;
+        }
+    });
 
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -254,6 +293,12 @@ function onMouseMove() {
 
     switch (intersects[0].object.parent.name) {
         case "box1":
+            children.circle1.visible = false;
+            children.circle2.visible = true;
+            break;
+        default:
+            children.circle1.visible = true;
+            children.circle2.visible = false;
             break;
     }
 }
