@@ -16,14 +16,16 @@ let scene,
 
 const GLTF_Loader = new GLTFLoader();
 
-const defaultCamera = { x: 0, y: 7, z: 22 };
+const defaultCamera = { x: 0, y: 5, z: 20 };
 const objDefaultPosition = { x: 0, y: -2, z: 0 };
 const objectDefaultScale = { x: 1, y: 1.2, z: 1 };
 const animationTime = 1000;
 
 
 const myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
-    keyboard: false
+    keyboard: false,
+    backdrop: 'static',
+
 })
 
 const setupControls = () => {
@@ -91,6 +93,7 @@ const init = () => {
     // 
     makeBanner();
     addButtons();
+    addCircles();
 
 
     setupFloor();
@@ -103,6 +106,12 @@ const init = () => {
 }
 
 const handleModalClose = () => {
+
+    myModal.hide();
+    $(document.body).removeClass("modal-open");
+    $(".modal-backdrop").remove();
+
+
     new TWEEN.Tween(camera.position)
         .to({
             x: defaultCamera.x,
@@ -111,6 +120,19 @@ const handleModalClose = () => {
         }, animationTime)
         .onComplete(() => camera.lookAt(0, 0, 0))
         .start();
+}
+
+const addCircles = () => {
+    GLTF_Loader.load('./models/gltf/circle_1.gltf', function(gltf) {
+        gltf.scene.position.set(
+            8.6, -2, -10
+        );
+        gltf.scene.scale.set(
+            1.5, 1.3, 1.5
+        );
+        scene.add(gltf.scene);
+        gltf.scene.children[0].name = "circle1";
+    }, undefined, error => console.error(error));
 }
 
 const makeBanner = () => {
@@ -185,6 +207,7 @@ const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2()
 
 renderer.domElement.addEventListener('click', onClick, false);
+renderer.domElement.addEventListener('mousemove', onMouseMove, false);
 
 function onClick() {
     event.preventDefault();
@@ -215,5 +238,22 @@ function onClick() {
                     .start();
                 break;
         }
+    }
+}
+
+function onMouseMove() {
+    event.preventDefault();
+
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+    var intersects = raycaster.intersectObjects(scene.children, true);
+
+    if (intersects.length <= 0) return;
+
+    switch (intersects[0].object.parent.name) {
+        case "box1":
+            break;
     }
 }
