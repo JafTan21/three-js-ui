@@ -1,0 +1,146 @@
+article, aside, details, figcaption, figure, footer, header, hgroup, nav, section {display: block; margin: 0; padding: 0;}
+* {box-sizing:border-box; -moz-box-sizing:border-box; -webkit-box-sizing:border-box;}
+html {font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;}
+html, body, div, h1, h2, h3, h4, h5, h6, p, ul, li, form {margin: 0; padding: 0; list-style: none; font-weight: normal;}
+button, input, select, textarea {margin: 0; padding: 0; border: none; font-family: arial;}
+.custfield:focus {outline: none; border: none; box-shadow: none; -moz-box-shadow: none; -webkit-box-shadow: none;}
+body {font-family: arial; font-size: 14px; color: #000000;}
+a {text-decoration: none;}
+a:hover, a:focus {text-decoration: none; outline: none;}
+img {border: none; vertical-align: middle;}
+
+@font-face {
+    font-family: 'AcuminBdPro';
+    src: url('../fonts/AcuminBdPro.eot');
+    src: url('../fonts/AcuminBdPro.eot') format('embedded-opentype'),
+         url('../fonts/AcuminBdPro.woff2') format('woff2'),
+         url('../fonts/AcuminBdPro.woff') format('woff'),
+         url('../fonts/AcuminBdPro.ttf') format('truetype'),
+         url('../fonts/AcuminBdPro.svg#AcuminBdPro') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+  font-family: 'AvenirNext-Regular';
+  src: url('../fonts/AvenirNext-Regular.eot?#iefix') format('embedded-opentype'),  url('../fonts/AvenirNext-Regular.woff') format('woff'), url('../fonts/AvenirNext-Regular.ttf')  format('truetype'), url('AvenirNext-Regular.svg#AvenirNext-Regular') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+   font-family: "Acumin Pro Medium";
+   src: url("../fonts/Acumin Pro Medium.woff") format("woff"), url("../fonts/Acumin Pro Medium.eot") format("embedded-opentype"), url("../fonts/Acumin Pro Medium.otf") format("opentype");
+   font-weight: normal;
+   font-style: normal;
+}
+@font-face {
+   font-family: "Acumin Pro Condensed Light";
+   src: url("../fonts/Acumin Pro Condensed Light.woff") format("woff"), url("../fonts/Acumin Pro Condensed Light.eot") format("embedded-opentype"), url("../fonts/Acumin Pro Condensed Light.otf") format("opentype");
+   font-weight: normal;
+   font-style: normal;
+}
+@font-face {
+    font-family: 'AvenirNextMedium06';
+    src: url('../fonts/AvenirNextMedium06.eot');
+    src: url('../fonts/AvenirNextMedium06.eot') format('embedded-opentype'),
+         url('../fonts/AvenirNextMedium06.woff2') format('woff2'),
+         url('../fonts/AvenirNextMedium06.woff') format('woff'),
+         url('../fonts/AvenirNextMedium06.ttf') format('truetype'),
+         url('../fonts/AvenirNextMedium06.svg#AvenirNextMedium06') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+@font-face {
+    font-family: 'Acumin Pro SemiCondensed';
+    src: url('../fonts/AcuminProSemiCond-Regular.woff2') format('woff2'),
+        url('../fonts/AcuminProSemiCond-Regular.woff') format('woff');
+    font-weight: normal;
+    font-style: normal    
+}
+@font-face {
+    font-family: 'Acumin Pro SemiCondensed';
+    src: url('../fonts/AcuminProSemiCond-Medium.woff2') format('woff2'),
+        url('../fonts/AcuminProSemiCond-Medium.woff') format('woff');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+@font-face {
+    font-family: 'Acumin Pro SemiCondensed';
+    src: url('../fonts/AcuminProSemiCond-Semibold.woff2') format('woff2'),
+        url('../fonts/AcuminProSemiCond-Semibold.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+/****************
+ * Common Css
+ ****************/
+header, section, footer {width: 100%; float: left;}
+.custfield {border: none; border-radius: 0; -moz-border-radius: 0; -webkit-border-radius: 0; box-shadow: none; -moz-box-shadow: none; -webkit-box-shadow: none;}
+a, a:hover, button {transition:all 0.3s ease 0s; -moz-transition:all 0.3s ease 0s; -webkit-transition:all 0.3s ease 0s;}
+
+
+header {padding: 10px 10px 15px 140px; border-top:8px solid #00a7ae; background-color: #ffffff; position: fixed; top: 0px; left: 0px; z-index: 7;}
+header .logo {float: left;}
+header .mlinks {float: right; margin-top: 1px;}
+header .mlinks ul li {float: left; font-size: 16.28px; line-height: 14px; font-family: "Acumin Pro Condensed Light"; padding-right: 12px; margin-right: 12px; color: rgb(153, 153, 153); border-right: 2px solid rgb(153, 153, 153, 0.90);}
+header .mlinks ul li:last-child {margin-right: 0px; border-right: none;}
+header .mlinks ul li a {color: rgb(153, 153, 153);}
+header .mlinks ul li a:hover {color: #00456b;}
+
+.midpart1 {background: url(../images/mid-img.jpg) no-repeat 50% 100%; background-size: cover; height: 100vh;}
+
+footer {background-color: #00a7ae; padding: 10px 0px; position: fixed;bottom: 0px;left: 0px; z-index: 7;}
+footer .ftexts {float: left; width: 70%; padding-left: 140px;}
+footer .ftexts h4 {font-size: 15px; color: #ffffff; font-family: 'AcuminBdPro';}
+footer .ftexts p {font-size: 14px; color: #ffffff; font-family: 'AvenirNext-Regular';}
+footer .ftextright {float: right; width: 25.2%;}
+footer .ftextright .seelink {font-size: 16px; padding-left: 20px; cursor: pointer; color: #ffffff; font-family: 'AvenirNextMedium06'; background: url(../images/top-arrow.jpg) no-repeat 0 5px;}
+
+.cmodal {position: fixed; bottom: -100%; left: 0px; padding: 2px 2px 2px 0px; z-index: 7; right: 0px; background-color: #ffffff; box-shadow: rgb(0, 0, 0) 0px 3px 7px 1px; -moz-box-shadow: rgb(0, 0, 0) 0px 3px 7px 1px; -webkit-box-shadow: rgb(0, 0, 0) 0px 3px 7px 1px; transition:all 1s ease 0s; -moz-transition:all 1s ease 0s; -webkit-transition:all 1s ease 0s;}
+.openmodal .cmodal {bottom: 0px;}
+.cmodal .modalbody {padding: 65px 60px 20px 50px;}
+.cmodal .modalbody h3 {color: #00456b;font-size: 23px; margin-bottom: 26px; float: left; width: 100%; font-family: 'Acumin Pro SemiCondensed'; font-weight: 600;}
+.cmodal .modalbody h4 {color: #00456b; font-size: 22.99px; margin-bottom: 26px; float: left; width: 100%; font-family: 'Acumin Pro SemiCondensed'; font-weight: 600;}
+.cmodal .modalbody p, .cmodal .modalbody .list li {color: #212529; font-size: 17.68px; font-family: "Acumin Pro Medium"; margin-bottom: 17px; float: left; width: 100%;}
+.mt1 {margin-top: 15px;}
+.color1, .cmodal .modalbody p a {color: #00456b !important;}
+.cmodal .modalbody p a {text-decoration: underline;}
+.cmodal .modalbody .list {padding: 0px; margin: 0px 0px 26px; float: left; width: 100%;}
+.cmodal .modalbody .list li {margin-bottom: 3px;}
+.closebtn {width: 43px; height: 43px; background: url(../images/close-icon.png) no-repeat 50% 50%; cursor: pointer; position: absolute; top: 20px; right: 20px; z-index: 6;}
+
+/** Media **/
+@media only screen and (max-width: 1600px){
+	header {padding-left: 70px;}
+}
+@media only screen and (max-width: 1199px){
+	header, footer .ftexts {padding-left: 50px;}
+	header .mlinks ul li {font-size: 14px;}
+	.logo img {width: 140px;}
+}
+@media only screen and (max-width: 767px){
+	footer .ftexts {height: 50px; text-align: justify;}
+	footer .ftexts h4 {font-size: 12px;}
+	footer .ftexts p {font-size: 10px; padding-right: 20px;}
+	footer .ftextright .seelink {font-size: 12px; background-size: 11px auto; padding-left: 17px;}
+
+	.mCSB_scrollTools .mCSB_dragger .mCSB_dragger_bar{background-color: #005357;}
+	.cmodal .modalbody {padding: 50px 50px 20px 30px;}
+	.closebtn {top: 10px; right: 10px; background-size: 30px auto;}
+	.cmodal .modalbody {text-align: justify;}
+}
+@media only screen and (max-width:639px){
+	header, footer .ftexts {padding-left: 20px;}
+	.logo img {width: 90px;}
+	header .mlinks ul li {font-size: 11px; line-height: 11px;}
+}
+@media only screen and (max-width:479px){
+	header .mlinks {margin-top: 0px; margin-bottom: 5px;}
+	header .mlinks ul li {font-size: 9px; line-height: 9px;}
+	footer .ftexts h4 {font-size: 9px;}
+	header, footer .ftexts {padding-left: 15px;}
+	header .mlinks ul li {border-right-width: 1px; padding-right: 6px; margin-right: 6px;}
+	header .mlinks ul li:last-child {padding-right: 0px;}
+}
