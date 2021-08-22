@@ -1,0 +1,62 @@
+:root {
+    --welcomeBG: #00456a81;
+}
+
+#canvas_container {
+    width: 100%;
+    height: 90%;
+}
+
+.welcome {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color: var(--welcomeBG);
+    z-index: 99;
+}
+
+.left-part {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background-color: var(--welcomeBG);
+    z-index: 88;
+}
+
+.right-part {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background-color: var(--welcomeBG);
+    z-index: 88;
+}
+
+.welcome .welcome-text {
+    width: 600px;
+}
+
+@media all and (max-width:600px) {
+    .welcome .welcome-text {
+        width: 80%;
+    }
+}
+
+.welcome .welcome-button {
+    border: none;
+    background-color: transparent;
+    color: yellow;
+    margin-top: 10px;
+}
+
+.welcome-button img {
+    width: 80px;
+}
