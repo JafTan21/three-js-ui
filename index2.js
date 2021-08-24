@@ -53,10 +53,13 @@ const init = () => {
 
 
     FBX_Loader.load("./models/fbx/full.fbx", fbx => {
-        console.log(fbx.children.filter(c => c.name == 'polySurface9'));
         fbx.position.set(0, -3, 10);
         fbx.scale.set(2, 2, 2);
         scene.add(fbx);
+
+        $(".welcome-button")
+            .attr('disabled', false)
+            .html(`<img src="./images/welcome_arrow.png" alt="">`);
     }, undefined, err => console.log(err));
 
     window.addEventListener('resize', onWindowResize);
@@ -82,8 +85,8 @@ const setupControls = () => {
     controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
     controls.dampingFactor = 0.05;
     controls.screenSpacePanning = false;
-    controls.maxDistance = defaultCamera.z;
-    controls.maxPolarAngle = Math.PI / 2;
+    controls.maxDistance = defaultCamera.z + 10;
+    controls.maxPolarAngle = 1.65;
 
 }
 
@@ -226,6 +229,7 @@ const handleBillboardClick = (obj) => {
     let name = obj.name;
     if (!billboards[name]) return;
 
+    console.log(controls)
     new TWEEN.Tween(camera.position)
         .to(billboards[name].animateTo, animationTime)
         .onComplete(() => myModal.show())
