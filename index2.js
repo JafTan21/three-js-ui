@@ -2,7 +2,7 @@ import * as THREE from './three.module.js';
 import { OrbitControls } from './examples/jsm/controls/OrbitControls.js';
 import { TWEEN } from './examples/jsm/libs/tween.module.min.js';
 import { GLTFLoader } from './examples/jsm/loaders/GLTFLoader.js';
-
+import { FBXLoader } from './examples/jsm/loaders/FBXLoader.js';
 
 let scene,
     camera,
@@ -15,13 +15,27 @@ let scene,
     mesh;
 
 const GLTF_Loader = new GLTFLoader();
+const FBX_Loader = new FBXLoader();
 
-const defaultCamera = { x: 0, y: 5, z: 20 };
+const defaultCamera = { x: 0, y: 10, z: 40 };
 const objDefaultPosition = { x: 0, y: -2, z: 0 };
 const objectDefaultScale = { x: 1, y: 1.2, z: 1 };
 const animationTime = 1000;
 
 let children = {};
+
+const billboards = {
+    middle: {
+        path: './models/textures/billboard_middle.jpg',
+        position: { x: 0, y: 2.5, z: 8 },
+        name: "middle",
+        circle: {
+            normal: './models/gltf/circle_1.gltf',
+            onHover: './models/gltf/circle_2.gltf',
+            position: { x: 17, y: -3, z: -10 },
+        }
+    }
+};
 
 
 const myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
@@ -29,6 +43,48 @@ const myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
     backdrop: 'static',
 
 })
+
+
+
+
+
+const init = () => {
+    loader = new THREE.TextureLoader();
+
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color("#e0e0e0");
+
+    setupCamera();
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+
+    setupControls();
+
+    // light
+    let light = new THREE.AmbientLight(0x404040); // soft white light
+    scene.add(light)
+
+
+    // 
+    makeBanner();
+    makeBillboards();
+
+
+    setupFloor();
+
+
+
+    window.addEventListener('resize', onWindowResize);
+    window.addEventListener("hidden.bs.modal", handleModalClose);
+
+
+
+}
+
+
+
 
 const setupControls = () => {
 
@@ -48,12 +104,13 @@ const setupControls = () => {
 
 }
 
+
 const setupFloor = () => {
     // texture = new THREE.TextureLoader().load('./images/floor.jpg');
     // immediately use the texture for material creation
     geometry = new THREE.PlaneGeometry(100, 100);
     material = new THREE.MeshBasicMaterial({
-        color: 0xffffff,
+        color: "#bfc0c2",
         side: THREE.DoubleSide,
         // map: texture
     });
@@ -73,42 +130,6 @@ const setupCamera = () => {
     );
 }
 
-const init = () => {
-    loader = new THREE.TextureLoader();
-
-    scene = new THREE.Scene();
-
-
-    setupCamera();
-    renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
-
-
-    setupControls();
-
-    // light
-    let light = new THREE.AmbientLight(0x404040); // soft white light
-    scene.add(light)
-
-
-    // 
-    makeBanner();
-    addButtons();
-    addCircles();
-
-
-    setupFloor();
-
-
-
-    window.addEventListener('resize', onWindowResize);
-    window.addEventListener("hidden.bs.modal", handleModalClose);
-
-
-
-}
-
 const handleModalClose = () => {
 
     myModal.hide();
@@ -124,81 +145,87 @@ const handleModalClose = () => {
         }, animationTime)
         .onComplete(() => {
             camera.lookAt(0, 0, 0);
-            children.circle1.visible = true;
-            children.circle2.visible = false;
         })
         .start();
 
 
 }
 
-const addCircles = () => {
 
-    let circles = [
-        './models/gltf/circle_1.gltf',
-        './models/gltf/circle_2.gltf',
-    ];
+const makeBanner = () => {
 
-    circles.forEach((circle, index) => {
+    loader.load(
+        './models/textures/banner.jpg',
+        texture => {
+            material = new THREE.MeshBasicMaterial({ map: texture });
+            geometry = new THREE.PlaneGeometry(55, 20);
+            mesh = new THREE.Mesh(geometry, material);
+            mesh.position.set(0, 14, -5);
+            scene.add(mesh)
+        },
+        undefined, (err) => console.error('An error happened.')
+    );
+}
+
+const makeBillboards = () => {
+
+    for (const a in billboards) {
+        let billboard = billboards[a];
+        loader.load(
+            billboard.path,
+            texture => {
+                material = new THREE.MeshBasicMaterial({ map: texture });
+                geometry = new THREE.PlaneGeometry(28, 12);
+                mesh = new THREE.Mesh(geometry, material);
+                mesh.name = billboard.name;
+                mesh.position.set(
+                    billboard.position.x,
+                    billboard.position.y,
+                    billboard.position.z
+                );
+                scene.add(mesh)
+            },
+            undefined, (err) => console.error('An error happened.')
+        );
+
         GLTF_Loader
             .load(
-                circle,
-                function(gltf) {
+                billboard.circle.normal,
+                (gltf) => {
                     gltf.scene.position.set(
-                        8.6, -2, -10
+                        billboard.circle.position.x,
+                        billboard.circle.position.y,
+                        billboard.circle.position.z
                     );
-                    gltf.scene.scale.set(
-                        1.5, 1.3, 1.5
-                    );
+                    gltf.scene.scale.set(3, 2.5, 2.5);
                     scene.add(gltf.scene);
-                    gltf.scene.children[0].name = `circle${index + 1}`;
+                    gltf.scene.children[0].name = `circle-${billboard.name}-normal`;
+                },
+                undefined, error => console.error(error)
+            );
 
+        GLTF_Loader
+            .load(
+                billboard.circle.onHover,
+                (gltf) => {
+                    gltf.scene.position.set(
+                        billboard.circle.position.x,
+                        billboard.circle.position.y,
+                        billboard.circle.position.z
+                    );
+                    gltf.scene.scale.set(3, 2.5, 2.5);
+                    scene.add(gltf.scene);
+                    gltf.scene.children[0].name = `circle-${billboard.name}-onHover`;
                     scene.children.forEach((child, index) => {
-                        if (child.children[0] && child.children[0].name == 'circle2') {
+                        if (child.children[0] && child.children[0].name == `circle-${billboard.name}-onHover`) {
                             child.visible = false;
                         }
                     });
                 },
-                undefined,
-                error => console.error(error)
+                undefined, error => console.error(error)
             );
-    });
 
-}
-
-const makeBanner = () => {
-
-    let bannerParts = [
-        './models/gltf/display_00v1.gltf',
-        './models/gltf/display_00v2.gltf',
-        './models/gltf/display_00v3.gltf'
-    ];
-
-    bannerParts.forEach((part, index) => {
-        GLTF_Loader.load(part, function(gltf) {
-            gltf.scene.position.set(
-                objDefaultPosition.x, objDefaultPosition.y, objDefaultPosition.z
-            );
-            gltf.scene.scale.set(
-                objectDefaultScale.x, objectDefaultScale.y, objectDefaultScale.z
-            );
-            gltf.scene.children[0].name = "banner-" + index;
-            scene.add(gltf.scene);
-        }, undefined, error => console.error(error));
-    })
-}
-
-const addButtons = () => {
-    GLTF_Loader.load('./models/gltf/display_box_001.gltf', function(gltf) {
-        gltf.scene.position.set(
-            12, objDefaultPosition.y, objDefaultPosition.z
-        );
-        gltf.scene.scale.set(
-            objectDefaultScale.x, objectDefaultScale.y, objectDefaultScale.z
-        );
-        scene.add(gltf.scene);
-        gltf.scene.children[0].name = "box1";
-    }, undefined, error => console.error(error));
+    }
 }
 
 
@@ -229,13 +256,12 @@ function render() {
 }
 
 
-
 init();
 animate();
 
 
 const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2()
+const mouse = new THREE.Vector2();
 
 renderer.domElement.addEventListener('click', onClick, false);
 renderer.domElement.addEventListener('mousemove', onMouseMove, false);
@@ -251,17 +277,14 @@ function onClick() {
     var intersects = raycaster.intersectObjects(scene.children, true);
 
     if (intersects.length > 0) {
-        console.log('Intersection:', intersects[0].object.parent.name);
-        switch (intersects[0].object.parent.name) {
-            case "box1":
-                var myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
-                    keyboard: false
-                })
+        console.log('Intersection:', intersects[0].object);
+        switch (intersects[0].object.name) {
+            case "middle":
                 new TWEEN.Tween(camera.position)
                     .to({
-                        x: 0.5,
-                        y: 0,
-                        z: 5.5,
+                        x: 0,
+                        y: 1,
+                        z: 19,
                     }, animationTime)
                     .onComplete(() => {
                         myModal.show();
@@ -282,6 +305,7 @@ function onMouseMove() {
             children[child.children[0].name] = child;
         }
     });
+    console.log(children)
 
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -291,14 +315,17 @@ function onMouseMove() {
 
     if (intersects.length <= 0) return;
 
-    switch (intersects[0].object.parent.name) {
-        case "box1":
-            children.circle1.visible = false;
-            children.circle2.visible = true;
+    switch (intersects[0].object.name) {
+        case "middle":
+            $("body").css("cursor", "pointer");
+            children[`circle-middle-normal`].visible = false;
+            children[`circle-middle-onHover`].visible = true;
             break;
         default:
-            children.circle1.visible = true;
-            children.circle2.visible = false;
+            $("body").css("cursor", "auto");
+            children[`circle-middle-normal`].visible = true;
+            children[`circle-middle-onHover`].visible = false;
             break;
     }
+
 }

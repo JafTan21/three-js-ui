@@ -1,5 +1,4 @@
 $(document).ready(() => {
-    console.log('hi')
 
     $(".welcome-button").click(() => {
 
