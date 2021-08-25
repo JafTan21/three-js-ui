@@ -18,7 +18,7 @@ let scene,
 const FBX_Loader = new FBXLoader();
 
 
-const defaultCamera = { x: 0, y: 4, z: 35 };
+const defaultCamera = { x: 0, y: 4, z: 33 };
 const modelDefaultPosition = { x: 0, y: -3, z: 10 };
 const animationTime = 1000;
 
@@ -37,7 +37,7 @@ const billboards = {
         animateTo: {
             x: 0,
             y: 2,
-            z: 13
+            z: 12
         },
     },
     polySurface48_1: { // back - center
@@ -45,7 +45,7 @@ const billboards = {
         animateTo: {
             x: 0,
             y: -0.5,
-            z: 23
+            z: 23.5
         },
     },
 };
@@ -57,7 +57,10 @@ const init = () => {
     scene.background = new THREE.Color("#e0e0e0");
 
     setupCamera();
-    renderer = new THREE.WebGLRenderer();
+    renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+    });
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
     setupControls();
@@ -71,7 +74,15 @@ const init = () => {
     (new GLTFLoader()).load("./models/Untitled.gltf", gltf => {
         console.log(gltf)
 
-        gltf.scene.scale.set(2.5, 2.5, 2.5);
+        gltf.scene.traverse(o => {
+            if (o.isMesh && o.material.map !== null) {
+                o.material.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
+            }
+        })
+
+
+
+        gltf.scene.scale.set(2.9, 2.9, 2.9);
         gltf.scene.position.set(0, -2.8, 20);
         scene.add(gltf.scene);
 
@@ -85,6 +96,8 @@ const init = () => {
 
     window.addEventListener('resize', onWindowResize);
     window.addEventListener("hidden.bs.modal", handleModalClose);
+
+    controls.enabled = false;
 }
 
 
