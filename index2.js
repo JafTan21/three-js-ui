@@ -4,11 +4,9 @@ import { TWEEN } from './examples/jsm/libs/tween.module.min.js';
 import { GLTFLoader } from './examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from './examples/jsm/loaders/DRACOLoader.js';
 const dracoLoader = new DRACOLoader()
-dracoLoader.setDecoderPath('/js/libs/draco/')
-
-
+dracoLoader.setDecoderPath('./examples/js/libs/draco/')
 const loader = new GLTFLoader()
-loader.setDRACOLoader(dracoLoader)
+loader.setDRACOLoader( dracoLoader  );
 
 let scene,
     camera,
@@ -75,7 +73,7 @@ const init = () => {
 
   //  setupFloor();
 
-  loader.load("./models/doctor.glb", gltf => {
+  loader.load("./models/new_low.glb", gltf => {
 
 gltf.name = 'model';
 
@@ -102,9 +100,6 @@ renderer.domElement.addEventListener('mousemove', onMouseMove, false);
         $(".welcome-button")
             .attr('disabled', false)
             .html(`<img src="./images/welcome_arrow.png" alt="">`);
-
-
-animate();
 
     }, loading=>{
 $("#loaded").html(loading.loaded * 100 / loading.total + "%");
@@ -183,14 +178,14 @@ setTimeout( function() {
     render();
 
 
-    }, 1000 / 30 );
+    }, 1000 / 60 );
 
 
 }
 const render = () => renderer.render(scene, camera)
 
 init();
-
+animate();
 
 
 
@@ -233,7 +228,7 @@ const handleBillboardClick = (obj) => {
         .start();
 
   new TWEEN.Tween(model.rotation)
-        .to({x: -0.2}, animationTime)
+        .to({x: -0.3}, animationTime)
         .start();
 
 
@@ -258,7 +253,7 @@ function onMouseMove() {
 	handleCircleColor(intersects[0].object.name, 'yellow');
     } else {
         $("body").css("cursor", "auto");
-	//handleCircleColor(intersects[0].object.name, 'yellow');
+	handleCircleColor(intersects[0].object.name, 'white');
     }
 
 }
@@ -267,11 +262,8 @@ function onMouseMove() {
 
 const handleCircleColor = (name, color) => {
 
-//gltf.scene.children.filter(c => c.id == 24)[0].material.color.set(0xff0000);
 
-console.log(scene.children[1].children.filter(c=>c.name=='GEO_24'))
-
-scene.children[1].children.filter(c=>c.name=='GEO_24')[0].material.color.set(0xff0000);
+scene.children[1].children.filter(c=>c.name=='GEO_24')[0].material.color.set(color);
 
 }
 
