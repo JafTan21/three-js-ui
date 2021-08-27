@@ -2,7 +2,13 @@ import * as THREE from './three.module.js';
 import { OrbitControls } from './examples/jsm/controls/OrbitControls.js';
 import { TWEEN } from './examples/jsm/libs/tween.module.min.js';
 import { GLTFLoader } from './examples/jsm/loaders/GLTFLoader.js';
-import { FBXLoader } from './examples/jsm/loaders/FBXLoader.js';
+import { DRACOLoader } from './examples/jsm/loaders/DRACOLoader.js';
+const dracoLoader = new DRACOLoader()
+dracoLoader.setDecoderPath('/js/libs/draco/')
+
+
+const loader = new GLTFLoader()
+loader.setDRACOLoader(dracoLoader)
 
 let scene,
     camera,
@@ -11,18 +17,16 @@ let scene,
     geometry,
     material,
     floor,
-    loader,
     mesh,
     model;
 
-const FBX_Loader = new FBXLoader();
+let loadingIsComplete = false;
 
-
-const defaultCamera = { x: 0, y: 4, z: 33 };
+const defaultCamera = { x: 0, y: 40.5, z: 112 };
 const modelDefaultPosition = { x: 0, y: -3, z: 10 };
 const animationTime = 1000;
 
-let children = {};
+let circle;
 
 const myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
     keyboard: false,
@@ -32,27 +36,27 @@ const myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
 
 
 const billboards = {
-    polySurface58_1: { // back - center
-        name: "polySurface58_1",
+    GEO_09: { // back - center
+        name: "GEO_09",
         animateTo: {
             x: 0,
-            y: 2,
-            z: 12
+            y: 16,
+            z: 30
         },
     },
-    polySurface48_1: { // back - center
-        name: "polySurface48_1",
+    GEO_32: { // front - center
+        name: "GEO_32",
         animateTo: {
             x: 0,
-            y: -0.5,
-            z: 23.5
+            y: 6,
+            z: 60
         },
+	circle: 'GEO_24'
     },
 };
 
 
 const init = () => {
-    loader = new THREE.TextureLoader();
     scene = new THREE.Scene();
     scene.background = new THREE.Color("#e0e0e0");
 
@@ -69,35 +73,48 @@ const init = () => {
     let light = new THREE.AmbientLight(0xffffff, 1); // soft white light
     scene.add(light);
 
-    setupFloor();
+  //  setupFloor();
 
-    (new GLTFLoader()).load("./models/Untitled.gltf", gltf => {
+  loader.load("./models/doctor.glb", gltf => {
+
+gltf.name = 'model';
+
+gltf.scene.traverse(c=>{
+
+ if (c.isMesh && c.material.map !== null) {
+                c.material.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
+            }
+});
+
+
+model = gltf.scene;
+loadingIsComplete = true;
+        gltf.scene.scale.set(2.9, 2.9, 2.9);
+        gltf.scene.position.set(0, -10, 20);
+	gltf.scene.castShadow = true;
+	scene.add(gltf.scene);
         console.log(gltf)
 
-        gltf.scene.traverse(o => {
-            if (o.isMesh && o.material.map !== null) {
-                o.material.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
-            }
-        })
-
-
-
-        gltf.scene.scale.set(2.9, 2.9, 2.9);
-        gltf.scene.position.set(0, -2.8, 20);
-        scene.add(gltf.scene);
+renderer.domElement.addEventListener('click', onClick, false);
+renderer.domElement.addEventListener('mousemove', onMouseMove, false);
 
 
         $(".welcome-button")
             .attr('disabled', false)
             .html(`<img src="./images/welcome_arrow.png" alt="">`);
-    });
 
+
+animate();
+
+    }, loading=>{
+$("#loaded").html(loading.loaded * 100 / loading.total + "%");
+}, err=> console.log(err));
 
 
     window.addEventListener('resize', onWindowResize);
     window.addEventListener("hidden.bs.modal", handleModalClose);
 
-    controls.enabled = false;
+    // controls.enabled = false;
 }
 
 
@@ -109,29 +126,14 @@ const setupControls = () => {
 
     //controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
 
-    controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+/*    controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
     controls.dampingFactor = 0.05;
     controls.screenSpacePanning = false;
     controls.maxDistance = defaultCamera.z + 10;
     controls.maxPolarAngle = 1.65;
-
+*/
 }
 
-const setupFloor = () => {
-    // texture = new THREE.TextureLoader().load('./images/floor.jpg');
-    // immediately use the texture for material creation
-    geometry = new THREE.PlaneGeometry(100, 100);
-    material = new THREE.MeshBasicMaterial({
-        color: "#bfc0c2",
-        side: THREE.DoubleSide,
-        // map: texture
-    });
-    floor = new THREE.Mesh(geometry, material);
-    floor.name = "floor";
-    floor.position.y = -3;
-    floor.rotation.x = Math.PI / 2;
-    scene.add(floor);
-}
 
 const setupCamera = () => {
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -152,6 +154,9 @@ const handleModalClose = () => {
         }, animationTime)
         .start();
 
+  new TWEEN.Tween(model.rotation)
+        .to({x: 0}, animationTime)
+        .start();
 
 
 
@@ -167,20 +172,24 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-function animate() {
 
-    requestAnimationFrame(animate);
+function animate() {
+setTimeout( function() {
+
+        requestAnimationFrame( animate );   
     controls.update();
     TWEEN.update();
+
     render();
+
+
+    }, 1000 / 30 );
+
 
 }
 const render = () => renderer.render(scene, camera)
 
 init();
-animate();
-
-
 
 
 
@@ -195,9 +204,6 @@ animate();
 const raycaster = new THREE.Raycaster();
 const mouse = new THREE.Vector2();
 
-renderer.domElement.addEventListener('click', onClick, false);
-renderer.domElement.addEventListener('mousemove', onMouseMove, false);
-
 function onClick() {
     event.preventDefault();
 
@@ -210,6 +216,8 @@ function onClick() {
 
     if (intersects.length > 0) {
         console.log('Intersection:', intersects[0].object);
+
+
         handleBillboardClick(intersects[0].object);
     }
 }
@@ -223,18 +231,17 @@ const handleBillboardClick = (obj) => {
         .to(billboards[name].animateTo, animationTime)
         .onComplete(() => myModal.show())
         .start();
+
+  new TWEEN.Tween(model.rotation)
+        .to({x: -0.2}, animationTime)
+        .start();
+
+
 }
 
 
 function onMouseMove() {
     event.preventDefault();
-
-    children = {};
-    scene.children.forEach((child, index) => {
-        if (child.children[0]) {
-            children[child.children[0].name] = child;
-        }
-    });
 
     mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
     mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -242,14 +249,32 @@ function onMouseMove() {
     raycaster.setFromCamera(mouse, camera);
     var intersects = raycaster.intersectObjects(scene.children, true);
 
-    if (intersects.length <= 0) return;
+    if (intersects.length <= 0 || !loadingIsComplete) return;
 
     if (
-        ["polySurface48_1", "polySurface58_1"].includes(intersects[0].object.name)
+        ["GEO_09", "GEO_32"].includes(intersects[0].object.name)
     ) {
         $("body").css("cursor", "pointer");
+	handleCircleColor(intersects[0].object.name, 'yellow');
     } else {
         $("body").css("cursor", "auto");
+	//handleCircleColor(intersects[0].object.name, 'yellow');
     }
 
 }
+
+
+
+const handleCircleColor = (name, color) => {
+
+//gltf.scene.children.filter(c => c.id == 24)[0].material.color.set(0xff0000);
+
+console.log(scene.children[1].children.filter(c=>c.name=='GEO_24'))
+
+scene.children[1].children.filter(c=>c.name=='GEO_24')[0].material.color.set(0xff0000);
+
+}
+
+
+
+
