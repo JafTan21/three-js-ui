@@ -12,24 +12,17 @@ let scene,
     camera,
     renderer,
     controls,
-    geometry,
-    material,
-    floor,
-    mesh,
     model;
 
 
 let loadingIsComplete = false;
 const defaultCamera = { x: 0.288, y: 20, z: 220 };
-const modelDefaultPosition = { x: 0, y: -3, z: 10 };
+const modelDefaultRotation = { x: 0.2, y: 0, z: 0 };
 const animationTime = 1000;
-
-let circle;
 
 const myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
     keyboard: false,
     backdrop: 'static',
-
 })
 
 
@@ -38,16 +31,17 @@ const billboards = {
         name: "GEO_09",
         animateTo: {
             x: 0,
-            y: -3,
-            z: 18
+            y: 5,
+            z: 14
         },
+        rotation: { x: -0.4 }
     },
     GEO_32: { // front - center
         name: "GEO_32",
         animateTo: {
             x: 0,
-            y: -7,
-            z: 35
+            y: -20,
+            z: 70
         },
         circle: 'GEO_24'
     },
@@ -71,49 +65,42 @@ const init = () => {
     let light = new THREE.AmbientLight(0xffffff, 3); // soft white light
     scene.add(light);
 
-    //  setupFloor();
-
-    loader.load("./models/new_low.glb", gltf => {
-
-        gltf.name = 'model';
-
-        gltf.scene.traverse(c => {
-
-            if (c.isMesh && c.material.map !== null) {
-                c.material.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
-            }
-
-            // if (c.name == 'GEO_24') {
-            //     setInterval(() => { c.material.color.set(0xffffff * Math.random()); }, 1500);
-            // }
-            // console.log(c, c.name)
-        });
+    loader.load(
+        "./models/new_low.glb",
+        gltf => {
+            gltf.name = 'model';
+            gltf.scene.traverse(c => {
+                if (c.isMesh && c.material.map !== null) {
+                    c.material.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
+                }
+            });
 
 
-        model = gltf.scene;
-        loadingIsComplete = true;
-        gltf.scene.scale.set(2.9, 2.9, 2.9);
-        gltf.scene.position.y = -18;
-        gltf.scene.rotation.x = 0.2;
-        scene.add(gltf.scene);
+            model = gltf.scene;
+            loadingIsComplete = true;
+            gltf.scene.scale.set(2.9, 2.9, 2.9);
+            gltf.scene.position.y = -18;
+            gltf.scene.rotation.x = modelDefaultRotation.x;
+            scene.add(gltf.scene);
 
-        renderer.domElement.addEventListener('click', onClick, false);
-        renderer.domElement.addEventListener('mousemove', onMouseMove, false);
+            renderer.domElement.addEventListener('click', onClick, false);
+            renderer.domElement.addEventListener('mousemove', onMouseMove, false);
 
 
-        $(".welcome-button")
-            .attr('disabled', false)
-            .html(`<img src="./images/welcome_arrow.png" alt="">`);
+            $(".welcome-button")
+                .attr('disabled', false)
+                .html(`<img src="./images/welcome_arrow.png" alt="">`);
 
-    }, loading => {
-        $("#loaded").html(loading.loaded * 100 / loading.total + "%");
-    }, err => console.log(err));
+        },
+        loading => $("#loaded").html(loading.loaded * 100 / loading.total + "%"),
+        err => console.log(err)
+    );
 
 
     window.addEventListener('resize', onWindowResize);
     window.addEventListener("hidden.bs.modal", handleModalClose);
 
-    // controls.enabled = false;
+    controls.enabled = false;
 }
 
 
@@ -125,12 +112,12 @@ const setupControls = () => {
 
     //controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
 
-    /*    controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
-        controls.dampingFactor = 0.05;
-        controls.screenSpacePanning = false;
-        controls.maxDistance = defaultCamera.z + 10;
-        controls.maxPolarAngle = 1.65;
-    */
+    controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+    controls.dampingFactor = 0.05;
+    controls.screenSpacePanning = false;
+    controls.maxDistance = defaultCamera.z + 10;
+    // controls.maxPolarAngle = 1.65;
+
 }
 
 
@@ -156,10 +143,13 @@ const handleModalClose = () => {
         }, animationTime)
         .start();
 
-    // new TWEEN.Tween(model.rotation)
-    //     .to({ x: 0 }, animationTime)
-    //     .start();
-
+    new TWEEN.Tween(model.rotation)
+        .to({
+            x: modelDefaultRotation.x,
+            y: modelDefaultRotation.y,
+            z: modelDefaultRotation.z,
+        }, animationTime)
+        .start();
 
 
     myModal.hide();
@@ -187,8 +177,6 @@ function animate() {
 
 
     }, 1000 / 120);
-
-
 }
 const render = () => renderer.render(scene, camera)
 
@@ -236,9 +224,11 @@ const handleBillboardClick = (obj) => {
         .onComplete(() => myModal.show())
         .start();
 
-    // new TWEEN.Tween(model.rotation)
-    //     .to({ x: -0.3 }, animationTime)
-    //     .start();
+    if (billboards[name].rotation) {
+        new TWEEN.Tween(model.rotation)
+            .to({ x: billboards[name].rotation.x }, animationTime)
+            .start();
+    }
 
 
 }
