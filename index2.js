@@ -18,9 +18,9 @@ let scene,
     mesh,
     model;
 
-let loadingIsComplete = false;
 
-const defaultCamera = { x: 0, y: 40.5, z: 112 };
+let loadingIsComplete = false;
+const defaultCamera = { x: 0.288, y: 20, z: 220 };
 const modelDefaultPosition = { x: 0, y: -3, z: 10 };
 const animationTime = 1000;
 
@@ -38,16 +38,16 @@ const billboards = {
         name: "GEO_09",
         animateTo: {
             x: 0,
-            y: 16,
-            z: 30
+            y: -3,
+            z: 18
         },
     },
     GEO_32: { // front - center
         name: "GEO_32",
         animateTo: {
             x: 0,
-            y: 6,
-            z: 60
+            y: -7,
+            z: 35
         },
         circle: 'GEO_24'
     },
@@ -82,16 +82,20 @@ const init = () => {
             if (c.isMesh && c.material.map !== null) {
                 c.material.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
             }
+
+            // if (c.name == 'GEO_24') {
+            //     setInterval(() => { c.material.color.set(0xffffff * Math.random()); }, 1500);
+            // }
+            // console.log(c, c.name)
         });
 
 
         model = gltf.scene;
         loadingIsComplete = true;
         gltf.scene.scale.set(2.9, 2.9, 2.9);
-        gltf.scene.position.set(0, -10, 20);
-        gltf.scene.castShadow = true;
+        gltf.scene.position.y = -18;
+        gltf.scene.rotation.x = 0.2;
         scene.add(gltf.scene);
-        console.log(gltf)
 
         renderer.domElement.addEventListener('click', onClick, false);
         renderer.domElement.addEventListener('mousemove', onMouseMove, false);
@@ -131,12 +135,15 @@ const setupControls = () => {
 
 
 const setupCamera = () => {
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 1000);
     camera.position.set(
         defaultCamera.x,
         defaultCamera.y,
         defaultCamera.z
     );
+
+    // camera.rotation.set(-0.11103480385245912, -0.020939349623349666, -0.002334423843532961);
+    // camera.lookAt(scene.position);
 }
 
 
@@ -149,9 +156,9 @@ const handleModalClose = () => {
         }, animationTime)
         .start();
 
-    new TWEEN.Tween(model.rotation)
-        .to({ x: 0 }, animationTime)
-        .start();
+    // new TWEEN.Tween(model.rotation)
+    //     .to({ x: 0 }, animationTime)
+    //     .start();
 
 
 
@@ -176,9 +183,10 @@ function animate() {
         TWEEN.update();
 
         render();
+        camera.zoom = 2;
 
 
-    }, 1000 / 60);
+    }, 1000 / 120);
 
 
 }
@@ -211,6 +219,7 @@ function onClick() {
 
     if (intersects.length > 0) {
         console.log('Intersection:', intersects[0].object);
+        console.log("Curremt camera: ", camera)
 
 
         handleBillboardClick(intersects[0].object);
@@ -227,9 +236,9 @@ const handleBillboardClick = (obj) => {
         .onComplete(() => myModal.show())
         .start();
 
-    new TWEEN.Tween(model.rotation)
-        .to({ x: -0.3 }, animationTime)
-        .start();
+    // new TWEEN.Tween(model.rotation)
+    //     .to({ x: -0.3 }, animationTime)
+    //     .start();
 
 
 }
