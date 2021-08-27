@@ -6,7 +6,7 @@ import { DRACOLoader } from './examples/jsm/loaders/DRACOLoader.js';
 const dracoLoader = new DRACOLoader()
 dracoLoader.setDecoderPath('./examples/js/libs/draco/')
 const loader = new GLTFLoader()
-loader.setDRACOLoader( dracoLoader  );
+loader.setDRACOLoader(dracoLoader);
 
 let scene,
     camera,
@@ -49,7 +49,7 @@ const billboards = {
             y: 6,
             z: 60
         },
-	circle: 'GEO_24'
+        circle: 'GEO_24'
     },
 };
 
@@ -68,42 +68,42 @@ const init = () => {
     setupControls();
 
     // light
-    let light = new THREE.AmbientLight(0xffffff, 1); // soft white light
+    let light = new THREE.AmbientLight(0xffffff, 3); // soft white light
     scene.add(light);
 
-  //  setupFloor();
+    //  setupFloor();
 
-  loader.load("./models/new_low.glb", gltf => {
+    loader.load("./models/new_low.glb", gltf => {
 
-gltf.name = 'model';
+        gltf.name = 'model';
 
-gltf.scene.traverse(c=>{
+        gltf.scene.traverse(c => {
 
- if (c.isMesh && c.material.map !== null) {
+            if (c.isMesh && c.material.map !== null) {
                 c.material.map.anisotropy = renderer.capabilities.getMaxAnisotropy();
             }
-});
+        });
 
 
-model = gltf.scene;
-loadingIsComplete = true;
+        model = gltf.scene;
+        loadingIsComplete = true;
         gltf.scene.scale.set(2.9, 2.9, 2.9);
         gltf.scene.position.set(0, -10, 20);
-	gltf.scene.castShadow = true;
-	scene.add(gltf.scene);
+        gltf.scene.castShadow = true;
+        scene.add(gltf.scene);
         console.log(gltf)
 
-renderer.domElement.addEventListener('click', onClick, false);
-renderer.domElement.addEventListener('mousemove', onMouseMove, false);
+        renderer.domElement.addEventListener('click', onClick, false);
+        renderer.domElement.addEventListener('mousemove', onMouseMove, false);
 
 
         $(".welcome-button")
             .attr('disabled', false)
             .html(`<img src="./images/welcome_arrow.png" alt="">`);
 
-    }, loading=>{
-$("#loaded").html(loading.loaded * 100 / loading.total + "%");
-}, err=> console.log(err));
+    }, loading => {
+        $("#loaded").html(loading.loaded * 100 / loading.total + "%");
+    }, err => console.log(err));
 
 
     window.addEventListener('resize', onWindowResize);
@@ -121,12 +121,12 @@ const setupControls = () => {
 
     //controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
 
-/*    controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
-    controls.dampingFactor = 0.05;
-    controls.screenSpacePanning = false;
-    controls.maxDistance = defaultCamera.z + 10;
-    controls.maxPolarAngle = 1.65;
-*/
+    /*    controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+        controls.dampingFactor = 0.05;
+        controls.screenSpacePanning = false;
+        controls.maxDistance = defaultCamera.z + 10;
+        controls.maxPolarAngle = 1.65;
+    */
 }
 
 
@@ -149,8 +149,8 @@ const handleModalClose = () => {
         }, animationTime)
         .start();
 
-  new TWEEN.Tween(model.rotation)
-        .to({x: 0}, animationTime)
+    new TWEEN.Tween(model.rotation)
+        .to({ x: 0 }, animationTime)
         .start();
 
 
@@ -169,16 +169,16 @@ function onWindowResize() {
 
 
 function animate() {
-setTimeout( function() {
+    setTimeout(function() {
 
-        requestAnimationFrame( animate );   
-    controls.update();
-    TWEEN.update();
+        requestAnimationFrame(animate);
+        controls.update();
+        TWEEN.update();
 
-    render();
+        render();
 
 
-    }, 1000 / 60 );
+    }, 1000 / 60);
 
 
 }
@@ -227,8 +227,8 @@ const handleBillboardClick = (obj) => {
         .onComplete(() => myModal.show())
         .start();
 
-  new TWEEN.Tween(model.rotation)
-        .to({x: -0.3}, animationTime)
+    new TWEEN.Tween(model.rotation)
+        .to({ x: -0.3 }, animationTime)
         .start();
 
 
@@ -250,10 +250,10 @@ function onMouseMove() {
         ["GEO_09", "GEO_32"].includes(intersects[0].object.name)
     ) {
         $("body").css("cursor", "pointer");
-	handleCircleColor(intersects[0].object.name, 'yellow');
+        handleCircleColor(intersects[0].object.name, 'yellow');
     } else {
         $("body").css("cursor", "auto");
-	handleCircleColor(intersects[0].object.name, 'white');
+        handleCircleColor(intersects[0].object.name, 'white');
     }
 
 }
@@ -263,10 +263,6 @@ function onMouseMove() {
 const handleCircleColor = (name, color) => {
 
 
-scene.children[1].children.filter(c=>c.name=='GEO_24')[0].material.color.set(color);
+    scene.children[1].children.filter(c => c.name == 'GEO_24')[0].material.color.set(color);
 
 }
-
-
-
-
