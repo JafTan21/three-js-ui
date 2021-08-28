@@ -16,8 +16,9 @@ let scene,
 
 
 let loadingIsComplete = false;
-const defaultCamera = { x: 0.288, y: 20, z: 220 };
-const modelDefaultRotation = { x: 0.2, y: 0, z: 0 };
+const defaultCamera = { x: 0.288, y: 6, z: 110 };
+const modelDefaultRotation = { x: 0.1, y: 0, z: 0 };
+const modelDefaultPosition = { x: 0, y: -18, z: 0 };
 const animationTime = 1000;
 
 const myModal = new bootstrap.Modal(document.getElementById('exampleModal'), {
@@ -31,18 +32,27 @@ const billboards = {
         name: "GEO_09",
         animateTo: {
             x: 0,
-            y: 5,
-            z: 14
+            y: -2,
+            z: 10
         },
-        rotation: { x: -0.4 }
+        model: {
+            y: -5
+        },
+        rotation: { x: -0.1 }
     },
     GEO_32: { // front - center
         name: "GEO_32",
         animateTo: {
             x: 0,
-            y: -20,
-            z: 70
+            y: 6,
+            z: 45
         },
+        model: {
+            z: 0,
+            y: -5,
+            z: 0
+        },
+        rotation: { x: -0.1 },
         circle: 'GEO_24'
     },
 };
@@ -64,10 +74,12 @@ const init = () => {
     // light
     let light = new THREE.AmbientLight(0xffffff, 3); // soft white light
     scene.add(light);
+    // scene.add(new THREE.HemisphereLight());
 
     loader.load(
         "./models/new_low.glb",
         gltf => {
+            console.log(gltf)
             gltf.name = 'model';
             gltf.scene.traverse(c => {
                 if (c.isMesh && c.material.map !== null) {
@@ -78,8 +90,8 @@ const init = () => {
 
             model = gltf.scene;
             loadingIsComplete = true;
-            gltf.scene.scale.set(2.9, 2.9, 2.9);
-            gltf.scene.position.y = -18;
+            gltf.scene.scale.set(2, 2, 2);
+            gltf.scene.position.y = modelDefaultPosition.y;
             gltf.scene.rotation.x = modelDefaultRotation.x;
             scene.add(gltf.scene);
 
@@ -100,7 +112,7 @@ const init = () => {
     window.addEventListener('resize', onWindowResize);
     window.addEventListener("hidden.bs.modal", handleModalClose);
 
-    controls.enabled = false;
+    // controls.enabled = false;
 }
 
 
@@ -112,10 +124,10 @@ const setupControls = () => {
 
     //controls.addEventListener( 'change', render ); // call this only in static scenes (i.e., if there is no animation loop)
 
-    controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
-    controls.dampingFactor = 0.05;
-    controls.screenSpacePanning = false;
-    controls.maxDistance = defaultCamera.z + 10;
+    // controls.enableDamping = true; // an animation loop is required when either damping or auto-rotation are enabled
+    // controls.dampingFactor = 0.05;
+    // controls.screenSpacePanning = false;
+    // controls.maxDistance = defaultCamera.z + 10;
     // controls.maxPolarAngle = 1.65;
 
 }
@@ -150,6 +162,12 @@ const handleModalClose = () => {
             z: modelDefaultRotation.z,
         }, animationTime)
         .start();
+
+
+    new TWEEN.Tween(model.position)
+        .to(modelDefaultPosition, animationTime)
+        .start();
+
 
 
     myModal.hide();
@@ -222,6 +240,10 @@ const handleBillboardClick = (obj) => {
     new TWEEN.Tween(camera.position)
         .to(billboards[name].animateTo, animationTime)
         .onComplete(() => myModal.show())
+        .start();
+
+    new TWEEN.Tween(model.position)
+        .to({ y: billboards[name].model.y }, animationTime)
         .start();
 
     if (billboards[name].rotation) {
