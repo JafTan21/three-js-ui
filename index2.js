@@ -283,7 +283,6 @@ function onMouseMove() {
 
 const handleCircleColor = (name, color) => {
 
-
-    scene.children[1].children.filter(c => c.name == 'GEO_24')[0].material.color.set(color);
+    scene.children[2].children.filter(c => c.name == 'GEO_24')[0].material.color.set(color);
 
 }
