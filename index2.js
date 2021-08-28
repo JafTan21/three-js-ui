@@ -74,7 +74,7 @@ const init = () => {
     // light
     let light = new THREE.AmbientLight(0xffffff, 3); // soft white light
     scene.add(light);
-    // scene.add(new THREE.HemisphereLight());
+    scene.add(new THREE.HemisphereLight("#00AAFF", "#FFAA00"));
 
     loader.load(
         "./models/new_low.glb",
@@ -112,7 +112,7 @@ const init = () => {
     window.addEventListener('resize', onWindowResize);
     window.addEventListener("hidden.bs.modal", handleModalClose);
 
-    // controls.enabled = false;
+    controls.enabled = false;
 }
 
 
